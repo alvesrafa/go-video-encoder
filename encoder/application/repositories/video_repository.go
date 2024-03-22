@@ -10,7 +10,7 @@ import (
 
 type VideoRepository interface {
 	Insert(video *domain.Video) (*domain.Video, error)
-	Find(id string) (domain.Video, error)
+	Find(id string) (*domain.Video, error)
 }
 
 type VideoRepositoryDb struct {
