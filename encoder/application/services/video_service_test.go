@@ -1,7 +1,6 @@
 package services_test
 
 import (
-	"fmt"
 	"log"
 	"testing"
 	"time"
@@ -46,8 +45,12 @@ func TestVideoService(t *testing.T) {
 		videoService.Video = video
 		videoService.VideoRepository = repo
 
-		err := videoService.Download("videoencoder")
-		fmt.Println(err)
+		err := videoService.Download("video-encoder-alvesrafa")
+
+		require.Nil(t, err)
+
+		err = videoService.Fragment()
+
 		require.Nil(t, err)
 	})
 }

@@ -24,8 +24,7 @@ func NewVideoService() VideoService {
 func (v *VideoService) Download(bucketName string) error {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
-	fmt.Printf("client2222 %v\n", client)
-	fmt.Printf("err %v\n", err)
+
 	if err != nil {
 		return err
 	}
@@ -78,8 +77,11 @@ func (v *VideoService) Fragment() error {
 	target := os.Getenv("localStoragePath") + "/" + v.Video.ID + ".frag"
 
 	cmd := exec.Command("mp4fragment", source, target)
-	output, err := cmd.CombinedOutput()
 
+	fmt.Printf("\n AAAAAAAAAA %v \n", cmd)
+
+	output, err := cmd.CombinedOutput()
+	fmt.Printf("\n BBBBBBBBBBBB %v \n", err)
 	if err != nil {
 		return err
 	}
