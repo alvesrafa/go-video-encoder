@@ -11,8 +11,8 @@ RUN apk add --update ffmpeg bash make
 # Install Bento
 WORKDIR /tmp/bento4
 
-RUN apk add --update --upgrade python3 git cmake unzip bash gcc g++ scons\
-&& git clone https://github.com/axiomatic-systems/Bento4.git\
+RUN apk add --update --upgrade python3 git cmake unzip bash gcc g++ scons
+RUN git clone https://github.com/axiomatic-systems/Bento4.git \
 && cd Bento4 && mkdir cmakebuild && cd cmakebuild && cmake -DCMAKE_BUILD_TYPE=Release ..
 
 WORKDIR /go/src
