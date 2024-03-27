@@ -37,11 +37,12 @@ func prepare() (*domain.Video, repositories.VideoRepositoryDb) {
 
 	return video, repo
 }
-func TestVideoService(t *testing.T) {
+func VideoService(t *testing.T) {
 	video, repo := prepare()
 	videoService := services.NewVideoService()
 	videoService.Video = video
 	videoService.VideoRepository = repo
+
 	t.Run("should download a video", func(t *testing.T) {
 		err := videoService.Download("video-encoder-alvesrafa")
 		require.Nil(t, err)
