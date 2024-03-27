@@ -1,6 +1,8 @@
 package services
 
 import (
+	"os"
+
 	"github.com/alvesrafa/video-encoder/application/repositories"
 	"github.com/alvesrafa/video-encoder/domain"
 )
@@ -12,6 +14,12 @@ type JobService struct {
 }
 
 func (j *JobService) Start() error {
+	err := j.ChangeJobStatus("DOWNLOADING")
+
+	if err != nil {
+		return j.failJob(err)
+	}
+	err = j.VideoService.Download(os.Getenv("inputBucketName"))
 
 	return nil
 }

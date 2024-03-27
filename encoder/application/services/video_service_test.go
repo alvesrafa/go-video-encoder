@@ -2,6 +2,7 @@ package services_test
 
 import (
 	"log"
+	"os"
 	"testing"
 	"time"
 
@@ -44,7 +45,7 @@ func VideoService(t *testing.T) {
 	videoService.VideoRepository = repo
 
 	t.Run("should download a video", func(t *testing.T) {
-		err := videoService.Download("video-encoder-alvesrafa")
+		err := videoService.Download(os.Getenv("inputBucketName"))
 		require.Nil(t, err)
 	})
 	t.Run("should fragment a video and fragment", func(t *testing.T) {
@@ -62,7 +63,7 @@ func VideoService(t *testing.T) {
 		videoService.Video = video
 		videoService.VideoRepository = repo
 
-		err := videoService.Download("video-encoder-alvesrafa")
+		err := videoService.Download(os.Getenv("inputBucketName"))
 		require.Nil(t, err)
 
 		err = videoService.Fragment()
