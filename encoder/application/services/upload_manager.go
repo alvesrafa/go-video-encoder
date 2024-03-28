@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -33,7 +32,6 @@ func (vu *VideoUpload) UploadObject(objectPath string, client *storage.Client, c
 	}
 
 	defer f.Close()
-	fmt.Println("vu.OutputBucket" + vu.OutputBucket)
 	wc := client.Bucket(vu.OutputBucket).Object(path[1]).NewWriter(ctx)
 	wc.ACL = []storage.ACLRule{{Entity: storage.AllUsers, Role: storage.RoleReader}}
 
@@ -86,8 +84,6 @@ func (vu *VideoUpload) ProcessUpload(concurrency int, doneUpload chan<- string) 
 
 	err := vu.loadPaths()
 
-	fmt.Println(vu.Paths)
-
 	if err != nil {
 		return err
 	}
@@ -116,7 +112,6 @@ func (vu *VideoUpload) ProcessUpload(concurrency int, doneUpload chan<- string) 
 			break
 		}
 	}
-	fmt.Println("Donneeee")
 	return nil
 }
 
