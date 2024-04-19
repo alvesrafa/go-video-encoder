@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/alvesrafa/video-encoder/domain"
@@ -15,7 +16,7 @@ type Database struct {
 	DsnTest       string
 	DbType        string
 	DbTypeTest    string
-	debug         bool
+	Debug         bool
 	AutoMigrateDb bool
 	Env           string
 }
@@ -30,7 +31,7 @@ func NewDatabaseTest() *gorm.DB {
 	dbInstance.DbTypeTest = "sqlite3"
 	dbInstance.DsnTest = ":memory:"
 	dbInstance.AutoMigrateDb = true
-	dbInstance.debug = true
+	dbInstance.Debug = true
 
 	connection, err := dbInstance.Connect()
 
@@ -42,26 +43,30 @@ func NewDatabaseTest() *gorm.DB {
 }
 
 func (database *Database) Connect() (*gorm.DB, error) {
-
+	fmt.Println(database.Dsn)
+	fmt.Println(database.Db)
+	fmt.Println(database.DbType)
 	var err error
-
+	fmt.Println("AA", database.Env)
 	if database.Env != "test" {
+		fmt.Println(database.Dsn)
 		database.Db, err = gorm.Open(database.DbType, database.Dsn)
 	} else {
 		database.Db, err = gorm.Open(database.DbTypeTest, database.DsnTest)
 	}
 
 	if err != nil {
+		fmt.Println("dAaAAAaab err: ", err)
 		return nil, err
 	}
 
-	if database.debug {
+	if database.Debug {
 		database.Db.LogMode(true)
 	}
 
 	if database.AutoMigrateDb {
 		database.Db.AutoMigrate(&domain.Video{}, &domain.Job{})
-		database.Db.Model(domain.Job{}).AddForeignKey("video_id", "videos {id}", "CASCADE", "CASCADE")
+		database.Db.Model(domain.Job{}).AddForeignKey("video_id", "videos (id)", "CASCADE", "CASCADE")
 	}
 
 	return database.Db, nil
