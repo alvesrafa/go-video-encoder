@@ -1,7 +1,6 @@
 package database
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/alvesrafa/video-encoder/domain"
@@ -43,20 +42,15 @@ func NewDatabaseTest() *gorm.DB {
 }
 
 func (database *Database) Connect() (*gorm.DB, error) {
-	fmt.Println(database.Dsn)
-	fmt.Println(database.Db)
-	fmt.Println(database.DbType)
 	var err error
-	fmt.Println("AA", database.Env)
+
 	if database.Env != "test" {
-		fmt.Println(database.Dsn)
 		database.Db, err = gorm.Open(database.DbType, database.Dsn)
 	} else {
 		database.Db, err = gorm.Open(database.DbTypeTest, database.DsnTest)
 	}
 
 	if err != nil {
-		fmt.Println("dAaAAAaab err: ", err)
 		return nil, err
 	}
 

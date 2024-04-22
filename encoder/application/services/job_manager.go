@@ -60,7 +60,7 @@ func (j *JobManager) Start(ch *amqp.Channel) {
 		if jobResult.Error != nil {
 			err = j.checkParseErrors(jobResult)
 		} else {
-			err = j.notifySuccess(jobResult)
+			err = j.notifySuccess(jobResult, ch)
 		}
 
 		if err != nil {
@@ -69,27 +69,28 @@ func (j *JobManager) Start(ch *amqp.Channel) {
 	}
 }
 
-func (j *JobManager) notifySuccess(jobResult JobWorkerResult) error {
-	// Mutex.Lock()
+func (j *JobManager) notifySuccess(jobResult JobWorkerResult, ch *amqp.Channel) error {
+
 	jobJson, err := json.Marshal(jobResult.Job)
-	// Mutex.Unlock()
+
 	if err != nil {
 		return err
 	}
 
 	err = j.notify(jobJson)
+
 	if err != nil {
 		return err
 	}
 
-	err = jobResult.Message.Ack(false) // acknowledge - informa o rabbitmq q a mensagem esta ok
+	err = jobResult.Message.Ack(false)
+
 	if err != nil {
 		return err
 	}
 
-	return err
+	return nil
 }
-
 func (j *JobManager) checkParseErrors(jobResult JobWorkerResult) error {
 	if jobResult.Job.ID != "" {
 		log.Printf("MessageID %v rejected. Error parsing job #{jobResult.Job.ID} Error: %v", jobResult.Message.DeliveryTag, jobResult.Error.Error())

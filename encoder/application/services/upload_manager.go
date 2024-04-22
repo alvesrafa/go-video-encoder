@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -28,7 +27,7 @@ func (vu *VideoUpload) UploadObject(objectPath string, client *storage.Client, c
 	f, err := os.Open(objectPath)
 
 	if err != nil {
-		return nil
+		return err
 	}
 
 	defer f.Close()
@@ -122,11 +121,10 @@ func (vu *VideoUpload) uploadWorker(in <-chan int, returnChan chan<- string, upl
 
 		if err != nil {
 			vu.Errors = append(vu.Errors, vu.Paths[position])
-			log.Printf("Error during the upload: %v. Error: %v", vu.Paths[position], err)
 			returnChan <- err.Error()
 		}
 
 		returnChan <- ""
 	}
-	returnChan <- "upload completed2"
+	returnChan <- "upload completed"
 }

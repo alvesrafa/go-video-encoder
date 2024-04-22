@@ -2,6 +2,7 @@ package services
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"time"
 
@@ -67,11 +68,18 @@ func JobWorker(messageChannel <-chan amqp.Delivery, returnChannel chan<- JobWork
 			returnChannel <- returnJobResult(domain.Job{}, message, err)
 			continue
 		}
+		fmt.Println("=========> =========> &job")
+		fmt.Println(&job)
 
 		jobService.Job = &job
 		err = jobService.Start()
 
-		returnChannel <- returnJobResult(domain.Job{}, message, err)
+		if err != nil {
+			returnChannel <- returnJobResult(domain.Job{}, message, err)
+			continue
+		}
+
+		returnChannel <- returnJobResult(job, message, nil)
 	}
 }
 
