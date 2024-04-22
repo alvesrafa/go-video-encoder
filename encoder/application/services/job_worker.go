@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/alvesrafa/video-encoder/domain"
@@ -19,6 +20,8 @@ type JobWorkerResult struct {
 	Message *amqp.Delivery
 	Error   error
 }
+
+var Mutex = &sync.Mutex{}
 
 func JobWorker(messageChannel <-chan amqp.Delivery, returnChannel chan<- JobWorkerResult, jobService JobService, workerID int, job domain.Job) {
 	// Formato do JSON
@@ -38,8 +41,11 @@ func JobWorker(messageChannel <-chan amqp.Delivery, returnChannel chan<- JobWork
 			continue
 		}
 
+		Mutex.Lock()
 		err = json.Unmarshal(message.Body, &jobService.VideoService.Video) // Injetando valores do body diretamente no video do videservice
 		jobService.VideoService.Video.ID = uuid.NewV4().String()
+		Mutex.Unlock()
+
 		if err != nil {
 			returnChannel <- returnJobResult(domain.Job{}, message, err)
 			continue
@@ -51,7 +57,9 @@ func JobWorker(messageChannel <-chan amqp.Delivery, returnChannel chan<- JobWork
 			continue
 		}
 
+		Mutex.Lock()
 		err = jobService.VideoService.InsertVideo()
+		Mutex.Unlock()
 		if err != nil {
 			returnChannel <- returnJobResult(domain.Job{}, message, err)
 			continue
@@ -63,7 +71,10 @@ func JobWorker(messageChannel <-chan amqp.Delivery, returnChannel chan<- JobWork
 		job.Status = "STARTING"
 		job.CreatedAt = time.Now()
 
+		Mutex.Lock()
 		_, err = jobService.JobRepository.Insert(&job)
+		Mutex.Unlock()
+
 		if err != nil {
 			returnChannel <- returnJobResult(domain.Job{}, message, err)
 			continue

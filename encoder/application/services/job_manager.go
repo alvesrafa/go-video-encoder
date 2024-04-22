@@ -70,9 +70,9 @@ func (j *JobManager) Start(ch *amqp.Channel) {
 }
 
 func (j *JobManager) notifySuccess(jobResult JobWorkerResult, ch *amqp.Channel) error {
-
+	Mutex.Lock()
 	jobJson, err := json.Marshal(jobResult.Job)
-
+	Mutex.Unlock()
 	if err != nil {
 		return err
 	}
@@ -93,7 +93,8 @@ func (j *JobManager) notifySuccess(jobResult JobWorkerResult, ch *amqp.Channel) 
 }
 func (j *JobManager) checkParseErrors(jobResult JobWorkerResult) error {
 	if jobResult.Job.ID != "" {
-		log.Printf("MessageID %v rejected. Error parsing job #{jobResult.Job.ID} Error: %v", jobResult.Message.DeliveryTag, jobResult.Error.Error())
+		log.Printf("MessageID %v rejected. Error parsing job %v with the video %v. Error: %v",
+			jobResult.Message.DeliveryTag, jobResult.Job.ID, jobResult.Job.Video.ID, jobResult.Error.Error())
 
 	} else {
 		log.Printf("MessageID %v rejected. Error: %v", jobResult.Message.DeliveryTag, jobResult.Error.Error())
